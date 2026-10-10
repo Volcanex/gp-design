@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en" data-density="compact">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>gdesign</title>
+  <!-- g-system's --surface-1 in dark, as a literal: a meta tag cannot read a custom property. -->
+  <meta name="theme-color" content="#111113">
+  <link rel="stylesheet" href="/g/g.css">
+  <script defer src="/g/g-ui.js"></script>
+  <link rel="stylesheet" href="/src/ui/styles/app.css">
+</head>
+<body>
+  <div id="app">
+    <noscript>
+      <div class="gd-boot-failure"><h1>This editor needs JavaScript</h1><p>Enable it for design.gabrielpenman.com and reload.</p></div>
+    </noscript>
+  </div>
+  <script>
+    // Runs before the module graph loads: on a browser without WebGPU the
+    // module still boots and fails properly (main.ts's showBootFailure),
+    // but this shows the explanation immediately rather than after the
+    // bundle downloads.
+    if (!('gpu' in navigator)) {
+      document.getElementById('app').innerHTML =
+        '<div class="gd-boot-failure" data-testid="boot-failure"><h1>This editor needs WebGPU</h1>' +
+        '<p>Open it in Chrome or Edge on a desktop, or Safari 18 or newer. Firefox needs WebGPU enabled in about:config.</p></div>';
+    }
+  </script>
+  <script type="module" src="/src/app/main.ts"></script>
+</body>
+</html>

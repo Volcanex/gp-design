@@ -1,0 +1,4 @@
+# Keyboard bindings (keys: 'Shift+Arrow...') read as generic-api-key; not secrets.
+src/app/keymap/bindings.ts:generic-api-key:57
+src/app/keymap/bindings.ts:generic-api-key:58
+src/app/keymap/bindings.ts:generic-api-key:59

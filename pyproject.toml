@@ -1,0 +1,8 @@
+[project]
+name = "gp-design"
+version = "0.1.0"
+description = "WebGPU compositing editor: paint.net face, float/OKLab pipeline underneath"
+
+[tool.gcore]
+design = "g-system@1.2.0"
+depends = []

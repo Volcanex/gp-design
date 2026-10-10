@@ -1,0 +1,355 @@
+/* gdesign app chrome on g-system. Everything here is layout for the docked
+   shell plus the few app-specific surfaces g-system does not ship (canvas
+   region, selection overlay, timeline strip). Greys only through the alias
+   tokens; local variables are --gd-* and never reuse a g name. Component
+   content (panes, forms, dialogs) is in panels.css. */
+@import './panels.css';
+@import './forms.css';
+
+:root {
+  /* The canvas surround sits one step below the page so the document reads
+     as the lit thing. */
+  --gd-surround: var(--surface-1);
+  --gd-rail-w: 76px;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  background: var(--surface-1);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-ui);
+}
+
+#app {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+}
+
+.gd-menubar { z-index: 20; }
+.gd-menu-check { display: inline-flex; width: 14px; height: 14px; flex: 0 0 auto; }
+.gd-menu-check .gd-icon { width: 14px; height: 14px; }
+.gd-menu-label { flex: 1 1 auto; }
+
+/* ---- main row: rail | canvas | splitter | right column ---- */
+
+.gd-main {
+  display: flex;
+  min-height: 0;
+  min-width: 0;
+}
+
+.gd-rail {
+  flex: 0 0 var(--gd-rail-w);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--surface-2);
+  border-right: 1px solid var(--border-subtle);
+}
+.gd-tools {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-1);
+}
+.gd-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  justify-items: center;
+}
+.gd-tool-btn { --_edge: transparent; }
+.gd-tool-btn[aria-pressed="true"] {
+  background: var(--fill-active);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+.gd-tool-btn .gd-icon { width: 16px; height: 16px; }
+.gd-rail-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 var(--sp-1);
+}
+.gd-rail-label {
+  font-size: 11px;
+  line-height: var(--lh-1);
+  color: var(--text-secondary);
+}
+.gd-rail-slider { width: 100%; }
+.gd-rail-value {
+  font-size: 11px;
+  line-height: var(--lh-1);
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.gd-canvas-region {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--gd-surround);
+}
+
+/* panX/panY (viewState) place this absolutely within the region: the
+   single coordinate system pan/zoom math assumes (see ui/shell/view-math.ts). */
+#gd-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  image-rendering: pixelated;
+}
+
+.gd-canvas-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--sp-3);
+  pointer-events: none;
+  font-size: 12px;
+  line-height: var(--lh-1);
+  color: var(--text-secondary);
+  z-index: 1;
+}
+
+.gd-right {
+  flex: 0 0 280px;
+  width: 280px;
+  min-width: 0;
+}
+
+/* ---- statusbar ---- */
+
+.gd-statusbar {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
+  height: var(--h-3);
+  padding: 0 var(--sp-2);
+  background: var(--surface-2);
+  border-top: 1px solid var(--border-subtle);
+  font-size: 12px;
+  line-height: var(--lh-1);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.gd-status__item { flex: 0 0 auto; }
+.gd-status__quiet { color: var(--text-secondary); }
+.gd-status__transport { --_edge: transparent; width: 24px; height: 24px; }
+.gd-status__transport .gd-icon { width: 14px; height: 14px; }
+.gd-status__hint,
+.gd-status__message {
+  flex: 0 1 auto;
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gd-status__hint { color: var(--text-secondary); }
+.gd-status__message { color: var(--text-primary); }
+
+/* ---- canvas overlays (select-tool.ts, text-tool.ts): DOM, so they stay
+   crisp hairlines at any zoom ---- */
+
+.gd-selection-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+.gd-selection-box {
+  position: absolute;
+  border: 1px solid var(--accent-edge);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+.gd-selection-box--secondary { opacity: 0.55; }
+.gd-selection-handle {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  margin: -5px 0 0 -5px;
+  background: var(--surface-2);
+  border: 1px solid var(--accent-edge);
+  box-sizing: border-box;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.gd-selection-handle--rotate { border-radius: 50%; cursor: grab; }
+.gd-marquee-box {
+  position: absolute;
+  border: 1px dashed var(--accent-edge);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+.gd-text-editor {
+  position: absolute;
+  padding: 2px 4px;
+  box-sizing: border-box;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-sm);
+  background: var(--overlay-bg);
+  color: var(--text-primary);
+  font: inherit;
+  resize: none;
+  outline: none;
+}
+
+/* ---- timeline strip (F10): a full-width region under the canvas, not a
+   pane. Every row shares one label-column/track-column grid so timeline.ts
+   can measure ONE track width (root.clientWidth - 96). ---- */
+
+.gd-timeline {
+  display: flex;
+  flex-direction: column;
+  height: 120px;
+  min-height: 120px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--border-subtle);
+  font-size: 12px;
+  line-height: var(--lh-1);
+  overflow-y: auto;
+}
+.gd-timeline__header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  height: var(--h-2);
+  padding: 0 var(--sp-2);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  flex: 0 0 auto;
+}
+.gd-timeline__label { font-weight: 500; color: var(--text-primary); }
+.gd-timeline__duration { display: flex; align-items: center; gap: var(--sp-1); }
+.gd-timeline__duration .input { width: 5em; height: var(--h-1); padding: 0 var(--sp-1); }
+.gd-timeline__row {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.gd-timeline__row--ruler { flex: 0 0 auto; height: 22px; }
+.gd-timeline__lane-label {
+  padding: 0 var(--sp-2);
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gd-timeline__track, .gd-timeline__lane-track {
+  position: relative;
+  height: 22px;
+  cursor: pointer;
+}
+.gd-timeline__tick {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-left: 1px solid var(--border-subtle);
+  padding-left: 3px;
+  color: var(--text-placeholder);
+  font-size: 10px;
+  line-height: 22px;
+  pointer-events: none;
+}
+.gd-timeline__playhead {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 999px; /* spans every lane row, clipped by .gd-timeline's overflow */
+  background: var(--accent-fill);
+  pointer-events: none;
+  z-index: 5;
+}
+.gd-timeline__loop-brace {
+  position: absolute;
+  top: 2px;
+  height: calc(100% - 4px);
+  background: var(--fill-active);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-sm);
+}
+.gd-timeline__loop-handle {
+  position: absolute;
+  top: 0;
+  width: 6px;
+  height: 100%;
+  cursor: ew-resize;
+}
+.gd-timeline__loop-handle--from { left: -3px; }
+.gd-timeline__loop-handle--to { right: -3px; }
+.gd-timeline__lanes { flex: 1 1 auto; overflow-y: auto; }
+.gd-timeline__key {
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: var(--accent-fill);
+  border-radius: 1px;
+  cursor: ew-resize;
+}
+.gd-timeline__key .gd-icon { display: none; }
+.gd-timeline__key.selected {
+  background: var(--accent-fill);
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.gd-timeline__key-tools {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-2);
+  border-top: 1px solid var(--border-subtle);
+}
+.gd-timeline__key-tools .select-wrap { flex: 0 0 auto; width: 8em; }
+.gd-timeline__empty {
+  padding: var(--sp-2);
+  color: var(--text-placeholder);
+}
+
+/* ---- fatal banner (main.ts showFatalBanner): pinned, one only ---- */
+
+#gd-fatal-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--danger-fill);
+  color: var(--danger-fg);
+  font-size: var(--font-size-ui);
+  line-height: var(--lh-2);
+  text-align: center;
+}
+
+/* ---- boot failure page (index.html pre-JS guard and main.ts showBootFailure) ---- */
+
+.gd-boot-failure {
+  max-width: 36rem;
+  margin: 20vh auto 0;
+  padding: var(--sp-4);
+  color: var(--text-primary);
+}
+.gd-boot-failure h1 { font-size: 18px; line-height: var(--lh-3); font-weight: 500; margin: 0 0 var(--sp-3); }
+.gd-boot-failure p { margin: 0 0 var(--sp-3); color: var(--text-secondary); line-height: var(--lh-2); }
+.gd-boot-failure pre { white-space: pre-wrap; color: var(--text-placeholder); font-family: var(--font-mono); font-size: 12px; }
+
+/* shared inline icon sizing */
+.gd-icon { width: 16px; height: 16px; flex: 0 0 auto; }

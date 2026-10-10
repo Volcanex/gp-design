@@ -1,0 +1,74 @@
+/* Params-form rows + dialog/popover chrome, built entirely on g-system's
+   shipped controls (.label, .input, .select-wrap/.select, .checkbox,
+   .g-slider, .g-swatch, .btn, .menu/.menu-item, dialog.dlg). This file only
+   lays those out for gdesign's dense, label-left rows. It never restyles a
+   g component's own look. Classes are gd-*; variables are --gd-*. */
+
+/* ---- schema-driven + hand-written dialog rows ---- */
+
+.gd-form-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.gd-form-row .label {
+  flex: 0 0 auto;
+  min-width: 6em;
+  cursor: ew-resize;
+  user-select: none;
+}
+.gd-form-control {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.gd-form-control .g-slider { flex: 1 1 auto; }
+.gd-form-control .input.num { flex: 0 0 auto; width: 5.5em; }
+.gd-form-control .select-wrap { flex: 1 1 auto; width: 100%; }
+.gd-form-unit { flex: 0 0 auto; font-size: 12px; color: var(--text-secondary); }
+
+.gd-form-vec {
+  flex: 1 1 auto;
+  display: flex;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+.gd-form-vec .input.num { width: 4.5em; flex: 0 0 auto; }
+
+/* Non-interactive keyframe indicator (opts.time absent): a plain glyph, not
+   a .btn. It has no click handler, so it must not read as a button. */
+.gd-form-keyframe-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  color: var(--accent-fill);
+}
+.gd-form-keyframe-badge .gd-icon { width: 14px; height: 14px; }
+
+.gd-menu-empty {
+  padding: var(--sp-2);
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* ---- dialogs: dialog.dlg ships unsized/unresizable from g-system; gdesign
+   dialogs carry per-effect/layer forms of unpredictable length, so the card
+   is a column that lets the body scroll and the user resize past it. ---- */
+
+dialog.dlg {
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  resize: both;
+  overflow: hidden;
+}
+.dlg-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}

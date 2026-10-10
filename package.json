@@ -1,0 +1,31 @@
+{
+  "name": "gdesign",
+  "private": true,
+  "version": "0.1.0",
+  "description": "WebGPU compositing editor: paint.net face, float/OKLab pipeline underneath",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "test": "vitest run",
+    "e2e": "npm run build && playwright test",
+    "gen:atlas": "node scripts/gen-msdf-atlas.mjs",
+    "deploy": "npm run build && sudo systemctl restart gdesign",
+    "gen:icons": "node scripts/gen-icons.mjs"
+  },
+  "dependencies": {
+    "lit-html": "^3.2.0",
+    "mediabunny": "^1.50.6"
+  },
+  "devDependencies": {
+    "@phosphor-icons/core": "^2.1.1",
+    "@playwright/test": "^1.53.0",
+    "@webgpu/types": "^0.1.60",
+    "happy-dom": "^17.0.0",
+    "msdf-bmfont-xml": "^2.8.0",
+    "typescript": "^5.8.0",
+    "vite": "^6.3.0",
+    "vitest": "^3.2.0"
+  }
+}

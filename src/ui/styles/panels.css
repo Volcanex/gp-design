@@ -1,0 +1,194 @@
+/* Pane and form content. Each pane uses g-system's components as they ship
+   (.g-tree rows, .g-swatch, .g-slider, .input, .select-wrap, .btn) and
+   this file only lays them out. Classes are gd-*; variables are --gd-*. */
+
+/* Layers is the column's one data-fill pane (shell.ts). g-pane's own base
+   rule sets `min-height: 0` explicitly (its data-fill variant only adds
+   `flex: 1 1 auto`), so once the other panes' real g-system-sized content
+   claims more of a short window than before, .g-pane-stack's flex algorithm
+   satisfies everyone by shrinking THIS pane all the way to nothing rather
+   than ever making the stack itself scroll, and its body still reports a
+   non-zero bounding rect (overflow: auto doesn't clip layout geometry, only
+   paint), so it sits there, invisible and unclickable, underneath whatever
+   pane comes after it in the DOM. A floor on the pane itself (same
+   selector g-system's own data-fill rule uses, so it wins on specificity
+   over the plain `.g-pane` default) is what makes the stack scroll instead. */
+/* Layers keeps room for ~6 rows above its footer; the column scrolls when the window is shorter. */
+.g-pane[data-fill] { min-height: 320px; }
+
+/* ---- history ---- */
+
+.gd-history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.gd-history-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  height: var(--h-2);
+  padding: 0 var(--sp-2);
+  cursor: default;
+  color: var(--text-secondary);
+}
+.gd-history-row:hover { background: var(--fill-hover); }
+.gd-history-row.current { color: var(--text-primary); background: var(--fill-active); }
+.gd-history-marker { display: inline-flex; width: 14px; height: 14px; color: var(--text-secondary); }
+.gd-history-marker .gd-icon { width: 14px; height: 14px; }
+.gd-history-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gd-history-empty {
+  padding: var(--sp-2);
+  color: var(--text-placeholder);
+}
+.gd-history-budget {
+  padding: var(--sp-1) var(--sp-2);
+  border-top: 1px solid var(--border-subtle);
+  font-size: 11px;
+  line-height: var(--lh-1);
+  color: var(--text-secondary);
+}
+
+/* ---- layers ---- */
+
+.gd-panel-body.gd-layers {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.gd-layers-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.gd-layers-empty {
+  padding: var(--sp-2);
+  color: var(--text-placeholder);
+}
+/* the mask chip's OWN muted state (its mask is disabled), distinct from
+   the row's data-muted (the layer itself is hidden) */
+.g-tree-actions .btn[data-muted] { color: var(--text-placeholder); }
+.g-tree-actions .btn[aria-pressed="true"] {
+  color: var(--accent-fg);
+  background: var(--accent-fill);
+  border-color: var(--accent-edge);
+}
+.gd-layers-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3) var(--sp-3);
+  border-top: 1px solid var(--border-subtle);
+}
+.gd-layers-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.gd-layers-row > .label { flex: 0 0 44px; }
+.gd-layers-row > .select-wrap,
+.gd-layers-row > .g-slider { flex: 1 1 auto; margin-right: var(--sp-3); } /* room for the 100% readout */
+.gd-layers-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+/* ---- colours ---- */
+
+.gd-panel-body.gd-colors {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-1) var(--sp-3) var(--sp-3);
+}
+.gd-colors-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+.gd-lc-canvas {
+  display: block;
+  width: 100%;
+  height: 110px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: crosshair;
+  touch-action: none;
+}
+.gd-hue-slider { width: 100%; }
+.gd-lch-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-2);
+}
+.gd-lch-row .label { font-size: 11px; }
+.gd-recent-disclosure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.gd-disclosure {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  color: var(--text-secondary);
+  font-size: var(--font-size-ui);
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+.gd-disclosure::-webkit-details-marker { display: none; }
+.gd-disclosure::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  rotate: -45deg;
+  transition: rotate var(--dur-fast) var(--ease-out);
+}
+details[open] > .gd-disclosure::before { rotate: 45deg; margin-top: -2px; }
+
+/* ---- effects ---- */
+
+.gd-panel-body.gd-effects {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-1) var(--sp-3) var(--sp-3);
+}
+.gd-effects-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.gd-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+.gd-effects-divider {
+  height: 1px;
+  background: var(--border-subtle);
+}
+.gd-effects-empty {
+  padding: var(--sp-1) 0;
+  color: var(--text-placeholder);
+}
+.gd-effects-list {
+  max-height: 220px;
+  overflow-y: auto;
+}
+.gd-effects-object-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.gd-effects-object-row > .field { flex: 1 1 0; min-width: 0; }
