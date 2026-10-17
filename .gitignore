@@ -5,3 +5,8 @@ playwright-report/
 *.local
 .claude/
 __pycache__/
+
+# Secrets stay local: an .env never goes to a public repo.
+.env
+.env.*
+!.env.example
